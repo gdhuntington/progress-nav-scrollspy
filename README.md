@@ -1,131 +1,236 @@
-## Prompt: Build a Progress Nav Scrollspy Table of Contents Component
+# Progress Nav Scrollspy
 
-### Overview
-Create a sticky, vertical table of contents (TOC) component with an animated SVG progress indicator along the left side. As the user scrolls through document sections, the indicator line travels down the left edge of the TOC, highlighting which sections are currently in view. This pattern is commonly called "Progress Nav" and was originally created by Hakim El Hattab.
+A React component that creates a sticky table of contents with an animated SVG progress indicator. As users scroll through your content, the indicator highlights which sections are currently visible, providing an intuitive navigation experience.
 
-### Reference Examples
-- **Original Demo:** https://lab.hakim.se/progress-nav/
-- **Source Code:** https://github.com/hakimel/css/blob/master/progress-nav/index.html
-- **Live Implementation:** https://developers.arcgis.com/javascript/latest/programming-patterns/ (see the "On this page" sidebar on the right)
-- **Tutorial:** https://kld.dev/toc-animation/
-- **Example:** https://codepen.io/agrimsrud/details/XWNLMeW using intersectionObserver
+## Features
 
-### Visual Requirements
-1. **Layout:**
-   - Sticky/fixed positioned sidebar containing the TOC
-   - Vertical list of section links (supports nested/indented items for subsections)
-   - Thin vertical line running along the left side of all TOC items (background track)
-   - Thicker colored line segment that moves/grows to indicate currently visible section(s)
+- **Animated SVG Progress Indicator** - A vertical line that dynamically highlights active sections as you scroll
+- **Real-time Scroll Tracking** - Updates instantly during scrolling, even at high speeds
+- **Auto-scroll TOC** - The table of contents automatically scrolls to keep the active indicator visible
+- **Automatic Heading Extraction** - Automatically finds and extracts headings from your content
+- **Click-to-Navigate** - Click any item to smoothly scroll to that section
+- **Dark Mode Support** - Built-in light and dark theme support via CSS variables
+- **Reading Progress** - Optional percentage indicator showing how far through the document you've read
+- **URL Hash Updates** - Optionally update the URL hash as you scroll through sections
+- **Gradient Support** - Use gradient colors for the active indicator
+- **Accessibility** - ARIA labels, keyboard navigation, focus management, and reduced motion support
+- **Customizable** - Extensive CSS variables and props for theming and behavior
 
-2. **Indicator Behavior:**
-   - The progress indicator should be an SVG path that traces alongside the TOC links
-   - The path should should remain straight along side rather than indenting/outdenting to follow nested hierarchy levels
-   - As the user scrolls, the highlighted portion of the path should:
-     - Start at the first visible section's link
-     - Extend down to cover all currently visible sections
-     - Animate smoothly between states
-   - Multiple sections can be highlighted simultaneously if they're all in view
+## Installation
 
-3. **Styling:**
-   - Background track: thin (1-2px), light gray line
-   - Active indicator: thicker (2-3px), colored line (e.g., primary brand color)
-   - Active TOC links should also change text color/weight
-   - Smooth transitions for all state changes
-   - Hover effect shows a darker bolor of the background track color and text darken (unless it is the active one)
-   - Themed for light/dark application
-
-### Technical Requirements
-1. **Framework:** [React/Vue/Vanilla JS - specify your preference]
-
-2. **Core Technologies:**
-   - SVG for the progress path (not CSS borders)
-   - IntersectionObserver API for detecting visible sections
-   - CSS transitions for smooth animations
-
-3. **SVG Path Implementation:**
-   - Dynamically generate the path's `d` attribute based on TOC link positions
-   - Use `offsetTop`, `offsetLeft`, and `offsetHeight` of each link element
-   - Path should draw vertical lines with horizontal jogs for indentation changes
-   - Use `stroke-dasharray` and `stroke-dashoffset` to control which portion of the path is visible/highlighted
-
-4. **IntersectionObserver Setup:**
-   - Observe all content sections that correspond to TOC links
-   - Track which sections have `intersectionRatio > 0`
-   - Update the path highlight when visibility changes
-   - Handle multiple simultaneous visible sections
-
-5. **Component Props/Configuration:**
-   ```
-   - contentSelector: CSS selector for content sections to observe
-   - headingSelector: CSS selector for headings within sections (h2, h3, h4, etc.)
-   - tocContainer: Reference to the TOC container element
-   - activeColor: Color for the highlighted path segment
-   - trackColor: Color for the background track
-   - strokeWidth: Width of the indicator line
-   - offset: Pixel offset for when a section is considered "active"
-   ```
-
-6. **Accessibility:**
-   - TOC links should be keyboard navigable
-   - Use appropriate ARIA attributes
-   - Clicking a TOC link should smooth scroll to that section
-
-### Key Functions to Implement
-
-1. **drawPath()** - Generates the SVG path data:
-   - Iterate through TOC links
-   - Build path commands (M, L) based on link positions
-   - Handle indentation changes with horizontal path segments
-
-2. **updatePathHighlight()** - Updates visible portion:
-   - Find first and last active links
-   - Calculate `pathStart` and `pathEnd` positions
-   - Update `stroke-dasharray` to show only the active segment
-
-3. **observeSections()** - Sets up IntersectionObserver:
-   - Create observer with appropriate threshold/rootMargin
-   - Track active sections in state
-   - Trigger path updates on intersection changes
-
-### Sample HTML Structure
-```html
-<aside class="toc-sidebar">
-  <nav class="toc-nav">
-    <h2>On this page</h2>
-    <ul class="toc-list">
-      <li><a href="#section-1" class="toc-link">Section 1</a></li>
-      <li><a href="#section-2" class="toc-link">Section 2</a>
-        <ul>
-          <li><a href="#section-2-1" class="toc-link toc-link--nested">Subsection 2.1</a></li>
-          <li><a href="#section-2-2" class="toc-link toc-link--nested">Subsection 2.2</a></li>
-        </ul>
-      </li>
-      <li><a href="#section-3" class="toc-link">Section 3</a></li>
-    </ul>
-    <svg class="toc-progress" aria-hidden="true">
-      <path class="toc-progress-track" />
-      <path class="toc-progress-indicator" />
-    </svg>
-  </nav>
-</aside>
+```bash
+npm install @webzicon/progress-nav-scrollspy
 ```
 
-### Additional Features
-- Show reading progress percentage
-- Gradient color on the active indicator (colors) property
-- Mobile-responsive drawer/overlay version
-- Auto-generate TOC from page headings in a markdown file
-- URL hash updates as user scrolls setting (true/false)
+## Quick Start
 
-### Testing Scenarios
+```tsx
+import { ProgressNavScrollspy } from '@webzicon/progress-nav-scrollspy';
+import '@webzicon/progress-nav-scrollspy/styles';
 
-There are a few markdown files in the same folder as the project under ./test_docs that can be used for testing the component.
+function App() {
+  return (
+    <div className="layout">
+      <aside className="sidebar">
+        <ProgressNavScrollspy
+          contentSelector=".content"
+          headingSelector="h1, h2, h3"
+        />
+      </aside>
 
-1. Page with 5+ sections of varying lengths
-2. Deeply nested sections (3+ levels)
-3. Very short sections that may all be visible at once
-4. Rapid scrolling behavior
-5. Window resize handling
-6. Browser back/forward navigation with hash URLs
+      <main className="content">
+        <h1>Introduction</h1>
+        <p>Your content here...</p>
 
----
+        <h2>Getting Started</h2>
+        <p>More content...</p>
+
+        <h3>Prerequisites</h3>
+        <p>Even more content...</p>
+      </main>
+    </div>
+  );
+}
+```
+
+## How It Works
+
+1. **Heading Detection** - The component scans your content container for heading elements (h1-h6) and builds a table of contents
+2. **Scroll Monitoring** - As the user scrolls, the component tracks which headings are visible in the viewport
+3. **SVG Animation** - An SVG path element uses `stroke-dasharray` and `stroke-dashoffset` to create the animated indicator effect
+4. **Direct DOM Updates** - For smooth real-time performance, the indicator updates directly via DOM manipulation, bypassing React's render cycle during fast scrolling
+
+## Basic Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `contentSelector` | `string` | `'.content'` | CSS selector for the scrollable content container |
+| `headingSelector` | `string` | `'h1, h2, h3, h4, h5, h6'` | CSS selector for headings to include |
+| `items` | `TocItem[]` | - | Manually provide TOC items instead of auto-extraction |
+| `title` | `string` | `'On this page'` | Title shown above the TOC |
+| `showTitle` | `boolean` | `true` | Whether to show the title |
+| `showProgress` | `boolean` | `false` | Show reading progress percentage |
+| `updateHash` | `boolean` | `false` | Update URL hash on scroll |
+| `offset` | `number` | `100` | Pixel offset for determining active sections |
+| `minLevel` | `number` | `1` | Minimum heading level to include (1-6) |
+| `maxLevel` | `number` | `6` | Maximum heading level to include (1-6) |
+
+## Styling Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `activeColor` | `string \| string[]` | `'#3b82f6'` | Color for active indicator (array for gradient) |
+| `trackColor` | `string` | `'#e5e7eb'` | Color for the background track |
+| `strokeWidth` | `number` | `2` | Width of the progress indicator stroke |
+| `animationDuration` | `number` | `150` | Animation duration in milliseconds |
+| `className` | `string` | - | Additional CSS class for the container |
+
+## Callback Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `onItemClick` | `(item: TocItem) => void` | Called when a TOC item is clicked |
+| `onActiveChange` | `(activeItems: TocItem[]) => void` | Called when active sections change |
+| `onProgressChange` | `(progress: number) => void` | Called when reading progress changes |
+
+## CSS Customization
+
+The component uses CSS variables for easy theming:
+
+```css
+.pns-container {
+  --pns-active-color: #3b82f6;    /* Active indicator and text color */
+  --pns-track-color: #e5e7eb;     /* Background track color */
+  --pns-text-color: #374151;      /* Primary text color */
+  --pns-text-muted: #6b7280;      /* Muted text color */
+  --pns-hover-bg: #f3f4f6;        /* Hover background color */
+  --pns-font-size: 0.875rem;      /* Base font size */
+  --pns-spacing: 0.5rem;          /* Base spacing unit */
+  --pns-indent: 0.75rem;          /* Indentation per heading level */
+  --pns-border-radius: 0.25rem;   /* Border radius for hover states */
+}
+```
+
+### Dark Mode
+
+Dark mode is automatically applied when:
+- The container has the `pns-dark` class
+- A parent element has `data-theme="dark"`
+- A parent element has the `dark` class
+
+```tsx
+<ProgressNavScrollspy className="pns-dark" />
+```
+
+Or use your app's theme context:
+
+```tsx
+<div className={isDark ? 'dark' : ''}>
+  <ProgressNavScrollspy />
+</div>
+```
+
+## Advanced Usage
+
+### Manual TOC Items
+
+Instead of auto-extraction, provide your own items:
+
+```tsx
+const items = [
+  { id: 'intro', text: 'Introduction', level: 1 },
+  { id: 'setup', text: 'Setup', level: 2 },
+  { id: 'config', text: 'Configuration', level: 2 },
+];
+
+<ProgressNavScrollspy items={items} />
+```
+
+### Gradient Indicator
+
+Use an array of colors for a gradient effect:
+
+```tsx
+<ProgressNavScrollspy
+  activeColor={['#3b82f6', '#8b5cf6', '#ec4899']}
+/>
+```
+
+### Using Individual Hooks
+
+For advanced customization, use the hooks directly:
+
+```tsx
+import {
+  useVisibleSections,
+  useAutoExtractHeadings,
+  usePathSegments,
+  useReadingProgress,
+} from '@webzicon/progress-nav-scrollspy';
+
+function CustomTOC() {
+  const { items } = useAutoExtractHeadings('.content', 'h1, h2, h3', 1, 3);
+  const { activeItems } = useVisibleSections(items, { offset: 100 });
+  const progress = useReadingProgress('.content', true);
+
+  // Build your own UI...
+}
+```
+
+### Using Utility Functions
+
+```tsx
+import {
+  extractHeadingsFromMarkdown,
+  buildNestedStructure,
+  scrollToElement,
+} from '@webzicon/progress-nav-scrollspy';
+
+// Extract headings from markdown string
+const headings = extractHeadingsFromMarkdown(markdownContent);
+
+// Build nested tree structure
+const nested = buildNestedStructure(headings);
+
+// Programmatically scroll to a section
+scrollToElement('section-id', 100);
+```
+
+## Browser Support
+
+- Chrome/Edge 88+
+- Firefox 78+
+- Safari 14+
+
+Requires React 17.0.0 or higher.
+
+## Accessibility
+
+The component includes:
+- Semantic `<nav>` element with `aria-label`
+- `role="list"` on the TOC list
+- `aria-current="location"` on active items
+- `aria-live` regions for progress announcements
+- Keyboard navigation support
+- Focus management when clicking items
+- Respects `prefers-reduced-motion` for users who prefer less animation
+- High contrast mode support
+
+## Performance
+
+The component is optimized for smooth scrolling:
+- Uses `requestAnimationFrame` for scroll updates
+- Direct DOM manipulation bypasses React during fast scrolling
+- Velocity detection disables CSS transitions during rapid scrolling
+- Link positions are cached and only recalculated on resize
+- Passive scroll event listeners
+
+## Documentation
+
+- [API Reference](./docs/API.md) - Complete API documentation
+- [Technical Documentation](./docs/TECHNICAL.md) - In-depth technical details
+- [File Structure](./docs/FILE_STRUCTURE.md) - Project file descriptions
+
+## License
+
+MIT
