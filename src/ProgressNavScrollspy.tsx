@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useMemo } from 'react';
+import { useRef, useEffect, useCallback, useMemo, useId } from 'react';
 import type { ProgressNavScrollspyProps, TocItem } from './types';
 import {
   useVisibleSections,
@@ -31,17 +31,16 @@ export function ProgressNavScrollspy({
   onItemClick,
   onActiveChange,
   onProgressChange,
-  intersectionThreshold = 0,
-  intersectionRootMargin = '-100px 0px -66% 0px',
   animationDuration = 150,
   minLevel = 1,
   maxLevel = 6,
 }: ProgressNavScrollspyProps) {
   const containerRef = useRef<HTMLElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const indicatorRef = useRef<SVGPathElement>(null);
 
   // Auto-extract headings if not provided
-  const items = useAutoExtractHeadings(
+  const { items, isLoading } = useAutoExtractHeadings(
     contentSelector,
     headingSelector,
     minLevel,
@@ -49,15 +48,16 @@ export function ProgressNavScrollspy({
     providedItems
   );
 
-  // Track visible sections
+  // Track visible sections using scroll position
+  // Pass refs for direct DOM manipulation (bypasses React for real-time performance)
   const { activeItems } = useVisibleSections(items, {
-    threshold: intersectionThreshold,
-    rootMargin: intersectionRootMargin,
-    contentSelector,
+    offset,
+    svgIndicatorRef: indicatorRef,
+    tocContainerRef: containerRef,
   });
 
   // Calculate path segments
-  const { segments, pathData, updateSegments } = usePathSegments(
+  const { trackPath, pathData, updateSegments } = usePathSegments(
     items,
     activeItems,
     containerRef
@@ -87,10 +87,11 @@ export function ProgressNavScrollspy({
       scrollToElement(item.id, offset);
 
       // Move focus to the target heading for screen readers
+      // Use preventScroll to avoid browser's default centering behavior
       const targetElement = document.getElementById(item.id);
       if (targetElement) {
         targetElement.setAttribute('tabindex', '-1');
-        targetElement.focus();
+        targetElement.focus({ preventScroll: true });
         // Remove tabindex after focus to restore natural tab order
         setTimeout(() => targetElement.removeAttribute('tabindex'), 0);
       }
@@ -103,40 +104,30 @@ export function ProgressNavScrollspy({
   // Build nested structure for rendering
   const nestedItems = useMemo(() => buildNestedStructure(items), [items]);
 
-  // Generate gradient ID if needed
+  // Generate stable gradient ID using React's useId hook
+  const instanceId = useId();
   const gradientId = useMemo(() => {
     if (Array.isArray(activeColor) && activeColor.length > 1) {
-      return `pns-gradient-${Math.random().toString(36).substr(2, 9)}`;
+      return `pns-gradient-${instanceId.replace(/:/g, '')}`;
     }
     return null;
-  }, [activeColor]);
+  }, [activeColor, instanceId]);
 
-  // Calculate SVG path
-  const { trackPath, activeDashArray, activeDashOffset } = useMemo(() => {
-    if (segments.length === 0) {
-      return { trackPath: '', activeDashArray: '0', activeDashOffset: '0' };
+  // Calculate SVG dash array for active indicator
+  const { activeDashArray, activeDashOffset } = useMemo(() => {
+    const { totalLength, activeStart, activeLength } = pathData;
+
+    if (totalLength <= 0) {
+      return { activeDashArray: '0', activeDashOffset: '0' };
     }
-
-    const firstSegment = segments[0];
-    const lastSegment = segments[segments.length - 1];
-    const startY = firstSegment.top;
-    const endY = lastSegment.top;
-    const totalLength = endY - startY;
-
-    // Simple vertical line path
-    const trackPath = `M 8 ${startY} L 8 ${endY}`;
-
-    // Calculate dash array for active portion
-    const { activeStart, activeEnd } = pathData;
-    const activeLength = activeEnd - activeStart;
 
     // stroke-dasharray: activeLength, totalLength
     // stroke-dashoffset: -activeStart
     const activeDashArray = `${activeLength} ${totalLength}`;
     const activeDashOffset = `-${activeStart}`;
 
-    return { trackPath, activeDashArray, activeDashOffset };
-  }, [segments, pathData]);
+    return { activeDashArray, activeDashOffset };
+  }, [pathData]);
 
   // Update segments when container mounts or items change
   useEffect(() => {
@@ -172,6 +163,32 @@ export function ProgressNavScrollspy({
       </ul>
     );
   };
+
+  // Show loading skeleton during extraction
+  if (isLoading) {
+    return (
+      <nav
+        ref={containerRef}
+        className={`pns-container pns-loading ${className}`}
+        aria-label="Table of contents"
+        aria-busy="true"
+      >
+        {showTitle && title && (
+          <div className="pns-header">
+            <h2 className="pns-title">{title}</h2>
+          </div>
+        )}
+        <div className="pns-content">
+          <div className="pns-skeleton">
+            <div className="pns-skeleton-line pns-skeleton-line--long" />
+            <div className="pns-skeleton-line pns-skeleton-line--medium" />
+            <div className="pns-skeleton-line pns-skeleton-line--short" />
+            <div className="pns-skeleton-line pns-skeleton-line--medium" />
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   // Don't render if no items
   if (items.length === 0) {
@@ -238,8 +255,9 @@ export function ProgressNavScrollspy({
             strokeLinecap="round"
           />
 
-          {/* Active indicator */}
+          {/* Active indicator - ref used for direct DOM updates during scroll */}
           <path
+            ref={indicatorRef}
             className="pns-indicator"
             d={trackPath}
             stroke={resolvedActiveColor}

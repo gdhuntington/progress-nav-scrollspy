@@ -1,30 +1,41 @@
-import type { TocItem, VisibilityState, PathSegment } from './types';
+import type { TocItem, PathSegment } from './types';
 /**
- * Hook to observe which sections are visible using IntersectionObserver
+ * Hook to track which sections are visible based on scroll position
+ * Uses direct DOM updates for real-time performance during fast scrolling
  */
 export declare function useVisibleSections(items: TocItem[], options?: {
-    threshold?: number;
-    rootMargin?: string;
-    contentSelector?: string;
+    offset?: number;
+    svgIndicatorRef?: React.RefObject<SVGPathElement | null>;
+    tocContainerRef?: React.RefObject<HTMLElement | null>;
+    /** Scroll velocity threshold (pixels/ms) for disabling transitions. @default 2 */
+    velocityThreshold?: number;
+    /** Padding (px) to keep indicator away from TOC viewport edges. @default 20 */
+    tocScrollPadding?: number;
+    /** Viewport height percentage for determining visible sections. @default 0.8 */
+    viewportThreshold?: number;
 }): {
-    visibilityState: VisibilityState;
     activeItems: TocItem[];
 };
 /**
  * Hook to auto-extract headings from a content container
+ * Returns items array and loading state
  */
-export declare function useAutoExtractHeadings(contentSelector: string, headingSelector: string, minLevel: number, maxLevel: number, providedItems?: TocItem[]): TocItem[];
+export declare function useAutoExtractHeadings(contentSelector: string, headingSelector: string, minLevel: number, maxLevel: number, providedItems?: TocItem[]): {
+    items: TocItem[];
+    isLoading: boolean;
+};
 /**
- * Hook to calculate SVG path segments based on TOC link positions
+ * Hook to calculate SVG path and active indicator position
  */
 export declare function usePathSegments(items: TocItem[], activeItems: TocItem[], containerRef: React.RefObject<HTMLElement | null>): {
-    segments: PathSegment[];
+    trackPath: string;
     pathData: {
         totalLength: number;
         activeStart: number;
-        activeEnd: number;
+        activeLength: number;
     };
     updateSegments: () => void;
+    segments: PathSegment[];
 };
 /**
  * Hook to track reading progress

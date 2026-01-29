@@ -24,7 +24,7 @@ export declare function flattenStructure(items: TocItem[]): TocItem[];
  */
 export declare function calculateReadingProgress(scrollContainer: Element, contentContainer: Element): number;
 /**
- * Smooth scroll to an element by ID
+ * Smooth scroll to an element by ID, positioning it at the top of the viewport
  */
 export declare function scrollToElement(elementId: string, offset?: number, behavior?: ScrollBehavior): void;
 /**

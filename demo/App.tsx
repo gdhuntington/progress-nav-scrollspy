@@ -95,6 +95,14 @@ export default function App() {
     document.body.classList.toggle('dark', isDark);
   }, [isDark]);
 
+  // Reset scroll position when document changes
+  useEffect(() => {
+    const scrollContainer = document.querySelector('.demo-main');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0;
+    }
+  }, [selectedDoc]);
+
   return (
     <div className={`demo-app ${isDark ? 'dark' : ''}`}>
       {/* Header */}
@@ -145,6 +153,7 @@ export default function App() {
         {/* Sidebar with TOC */}
         <aside className="demo-sidebar">
           <ProgressNavScrollspy
+            key={selectedDoc}
             contentSelector=".demo-content"
             headingSelector="h1, h2, h3, h4"
             showProgress={showProgress}
@@ -152,7 +161,7 @@ export default function App() {
             title="On this page"
             minLevel={1}
             maxLevel={4}
-            offset={80}
+            offset={0}
             activeColor={isDark ? '#60a5fa' : '#3b82f6'}
             trackColor={isDark ? '#374151' : '#e5e7eb'}
             onActiveChange={(items) => {

@@ -166,7 +166,23 @@ export function calculateReadingProgress(
 }
 
 /**
- * Smooth scroll to an element by ID
+ * Find the scrollable parent of an element
+ */
+function findScrollableParent(element: Element): Element | null {
+  let parent = element.parentElement;
+  while (parent) {
+    const style = window.getComputedStyle(parent);
+    const overflow = style.overflow + style.overflowY;
+    if (overflow.includes('auto') || overflow.includes('scroll')) {
+      return parent;
+    }
+    parent = parent.parentElement;
+  }
+  return null;
+}
+
+/**
+ * Smooth scroll to an element by ID, positioning it at the top of the viewport
  */
 export function scrollToElement(
   elementId: string,
@@ -176,17 +192,26 @@ export function scrollToElement(
   const element = document.getElementById(elementId);
   if (!element) return;
 
-  const scrollContainer = element.closest('.workspace-content')
-    || element.closest('[data-scroll-container]')
-    || document.documentElement;
+  // Find the scrollable container
+  const scrollContainer = findScrollableParent(element);
 
-  const elementTop = element.offsetTop;
-  const targetScroll = elementTop - offset;
+  if (scrollContainer) {
+    // Calculate the element's position relative to the scroll container's content
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
 
-  if (scrollContainer === document.documentElement) {
-    window.scrollTo({ top: targetScroll, behavior });
+    // How far the element is from the top of the visible container area
+    const elementOffsetFromContainerTop = elementRect.top - containerRect.top;
+
+    // Target scroll = current scroll + element's visual offset - desired offset from top
+    const targetScroll = scrollContainer.scrollTop + elementOffsetFromContainerTop - offset;
+
+    scrollContainer.scrollTo({ top: Math.max(0, targetScroll), behavior });
   } else {
-    scrollContainer.scrollTo({ top: targetScroll, behavior });
+    // Fallback to window scroll
+    const elementRect = element.getBoundingClientRect();
+    const targetScroll = window.scrollY + elementRect.top - offset;
+    window.scrollTo({ top: Math.max(0, targetScroll), behavior });
   }
 }
 
