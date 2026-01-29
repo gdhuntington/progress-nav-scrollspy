@@ -1,0 +1,57 @@
+{
+  "name": "@webzicon/progress-nav-scrollspy",
+  "version": "1.0.0",
+  "description": "A sticky table of contents component with animated SVG progress indicator for React",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && npm run copy-css",
+    "copy-css": "cp src/styles.css dist/styles.css",
+    "dev": "tsc --watch",
+    "demo": "vite demo",
+    "demo:build": "vite build demo"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "~5.6.2",
+    "vite": "^5.4.10",
+    "@vitejs/plugin-react": "^4.3.3"
+  },
+  "keywords": [
+    "react",
+    "table-of-contents",
+    "toc",
+    "scrollspy",
+    "progress-nav",
+    "navigation",
+    "sidebar",
+    "markdown"
+  ],
+  "author": "Webzicon",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gdhuntington/webzicon-apps.git",
+    "directory": "react_component_ui/progress_nav_scrollspy"
+  }
+}

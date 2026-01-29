@@ -1,0 +1,260 @@
+/**
+ * Progress Nav Scrollspy Styles
+ *
+ * CSS variables for theming:
+ * --pns-active-color: Color for active indicator and links (default: #3b82f6)
+ * --pns-track-color: Color for background track (default: #e5e7eb)
+ * --pns-text-color: Primary text color (default: #374151)
+ * --pns-text-muted: Muted text color (default: #6b7280)
+ * --pns-hover-bg: Background color on hover (default: #f3f4f6)
+ * --pns-font-size: Base font size (default: 0.875rem)
+ * --pns-line-height: Line height (default: 1.5)
+ * --pns-spacing: Base spacing unit (default: 0.5rem)
+ * --pns-indent: Indentation per level (default: 1rem)
+ * --pns-border-radius: Border radius for hover states (default: 0.25rem)
+ */
+
+/* Container */
+.pns-container {
+  --pns-active-color: #3b82f6;
+  --pns-track-color: #e5e7eb;
+  --pns-track-hover-color: #d1d5db;
+  --pns-text-color: #374151;
+  --pns-text-muted: #6b7280;
+  --pns-text-hover: #111827;
+  --pns-hover-bg: #f3f4f6;
+  --pns-font-size: 0.875rem;
+  --pns-line-height: 1.5;
+  --pns-spacing: 0.5rem;
+  --pns-indent: 0.75rem;
+  --pns-border-radius: 0.25rem;
+  --pns-transition-duration: 150ms;
+  --pns-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  position: relative;
+  font-size: var(--pns-font-size);
+  line-height: var(--pns-line-height);
+}
+
+/* Dark theme support */
+.pns-container.pns-dark,
+[data-theme="dark"] .pns-container,
+.dark .pns-container {
+  --pns-active-color: #60a5fa;
+  --pns-track-color: #4b5563;
+  --pns-track-hover-color: #6b7280;
+  --pns-text-color: #d1d5db;
+  --pns-text-muted: #9ca3af;
+  --pns-text-hover: #f9fafb;
+  --pns-hover-bg: #374151;
+}
+
+/* Header */
+.pns-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--pns-spacing) 0;
+  margin-bottom: var(--pns-spacing);
+}
+
+.pns-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pns-text-muted);
+  margin: 0;
+}
+
+.pns-progress {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--pns-active-color);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Content wrapper */
+.pns-content {
+  position: relative;
+  display: flex;
+}
+
+/* SVG container */
+.pns-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.pns-track {
+  opacity: 1;
+}
+
+.pns-indicator {
+  opacity: 1;
+}
+
+/* Links container */
+.pns-links {
+  flex: 1;
+  padding-left: 20px;
+}
+
+/* List styles */
+.pns-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pns-list--nested {
+  margin-left: var(--pns-indent);
+}
+
+/* Item styles */
+.pns-item {
+  margin: 0;
+  padding: 0;
+}
+
+/* Link styles */
+.pns-link {
+  display: block;
+  padding: calc(var(--pns-spacing) * 0.5) calc(var(--pns-spacing) * 0.75);
+  color: var(--pns-text-muted);
+  text-decoration: none;
+  border-radius: var(--pns-border-radius);
+  transition: color var(--pns-transition-duration) var(--pns-transition-timing),
+              background-color var(--pns-transition-duration) var(--pns-transition-timing);
+  word-break: break-word;
+}
+
+.pns-link:hover {
+  color: var(--pns-text-hover);
+  background-color: var(--pns-hover-bg);
+}
+
+.pns-link--active {
+  color: var(--pns-active-color);
+  font-weight: 500;
+}
+
+.pns-link--active:hover {
+  color: var(--pns-active-color);
+}
+
+/* Level-specific indentation (text only, not the progress line) */
+.pns-link--level-1 {
+  font-weight: 500;
+}
+
+.pns-link--level-2 {
+  padding-left: calc(var(--pns-spacing) * 0.75);
+}
+
+.pns-link--level-3 {
+  padding-left: calc(var(--pns-spacing) * 0.75 + var(--pns-indent));
+  font-size: 0.8125rem;
+}
+
+.pns-link--level-4 {
+  padding-left: calc(var(--pns-spacing) * 0.75 + var(--pns-indent) * 2);
+  font-size: 0.8125rem;
+}
+
+.pns-link--level-5 {
+  padding-left: calc(var(--pns-spacing) * 0.75 + var(--pns-indent) * 3);
+  font-size: 0.75rem;
+}
+
+.pns-link--level-6 {
+  padding-left: calc(var(--pns-spacing) * 0.75 + var(--pns-indent) * 4);
+  font-size: 0.75rem;
+}
+
+/* Focus styles for accessibility */
+.pns-link:focus {
+  outline: 2px solid var(--pns-active-color);
+  outline-offset: 2px;
+}
+
+.pns-link:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.pns-link:focus-visible {
+  outline: 2px solid var(--pns-active-color);
+  outline-offset: 2px;
+}
+
+/* Empty state */
+.pns-empty {
+  padding: var(--pns-spacing);
+  color: var(--pns-text-muted);
+  font-style: italic;
+}
+
+/* Animation for indicator appearing */
+@keyframes pns-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pns-indicator {
+  animation: pns-fade-in 0.2s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pns-container {
+    --pns-font-size: 0.8125rem;
+    --pns-spacing: 0.375rem;
+    --pns-indent: 0.75rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .pns-container {
+    display: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .pns-container {
+    --pns-track-color: currentColor;
+    --pns-text-muted: currentColor;
+  }
+
+  .pns-track {
+    opacity: 0.3;
+  }
+
+  .pns-link--active {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pns-link,
+  .pns-indicator,
+  .pns-track {
+    transition: none;
+  }
+
+  .pns-indicator {
+    animation: none;
+  }
+}
