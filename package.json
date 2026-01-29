@@ -51,7 +51,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gdhuntington/webzicon-apps.git",
-    "directory": "react_component_ui/progress_nav_scrollspy"
+    "url": "https://github.com/gdhuntington/progress-nav-scrollspy.git"
+  },
+  "homepage": "https://github.com/gdhuntington/progress-nav-scrollspy#readme",
+  "bugs": {
+    "url": "https://github.com/gdhuntington/progress-nav-scrollspy/issues"
   }
 }
